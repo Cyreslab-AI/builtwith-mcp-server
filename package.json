@@ -1,0 +1,38 @@
+{
+  "name": "builtwith-mcp-server",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for BuiltWith API integration",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+    "start": "node build/index.js",
+    "dev": "ts-node --esm src/index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "builtwith",
+    "technology",
+    "stack",
+    "detection"
+  ],
+  "author": "Cyreslab-AI <contact@cyreslab.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cyreslab-AI/builtwith-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Cyreslab-AI/builtwith-mcp-server/issues",
+    "email": "contact@cyreslab.ai"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.1.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
