@@ -27,7 +27,7 @@
     "email": "contact@cyreslab.ai"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.1.0",
+    "@modelcontextprotocol/sdk": "github:modelcontextprotocol/sdk",
     "axios": "^1.6.0"
   },
   "devDependencies": {
