@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/cyreslab-ai-builtwith-mcp-server-badge.png)](https://mseep.ai/app/cyreslab-ai-builtwith-mcp-server)
+
 # BuiltWith MCP Server
 
 A Model Context Protocol (MCP) server that provides tools for querying the BuiltWith API to get information about website technology stacks. This server can be used with any AI assistant that supports the Model Context Protocol.
