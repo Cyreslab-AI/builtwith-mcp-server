@@ -10,6 +10,7 @@ A Model Context Protocol (MCP) server that provides tools for querying the Built
 ## Features
 
 - **Domain Lookup**: Get detailed information about the technologies used by a specific domain
+- **Technology Search**: Find domains across the web that use a specific technology, via the BuiltWith Lists API
 - **Technology Categorization**: View technologies grouped by categories (Analytics, CMS, Frameworks, etc.)
 - **Detailed Information**: Access descriptions, detection dates, and links for each technology
 
@@ -129,6 +130,8 @@ With your MCP-compatible AI assistant, you can ask questions like:
 - "What analytics tools does amazon.com use?"
 - "What frameworks are used by netflix.com?"
 - "Is wordpress.com using any e-commerce technologies?"
+- "Find sites using Shopify"
+- "Which sites in Australia use Google Analytics and Optimizely?"
 
 ### Programmatic Usage
 
@@ -153,12 +156,31 @@ The server provides the following tools:
 
 #### domain_lookup
 
-Get technology stack information for a specific domain.
+Get technology stack information for a specific domain. Uses the free BuiltWith lookup by default, or the paid [Domain API](https://api.builtwith.com/domain-api) (currently v25) when `detailed` is set.
 
 Parameters:
 
 - `domain` (required): Domain to analyze (e.g., example.com)
 - `detailed` (optional): Whether to return detailed information (boolean)
+- `noMeta` (optional): When `detailed` is true, exclude metadata (company name, address, etc.) to reduce response size/cost (boolean)
+- `noPii` (optional): When `detailed` is true, strip personal names/emails from the response (boolean)
+- `hideText` (optional): When `detailed` is true, hide technology description, link, tag and category fields to reduce response size/cost (boolean)
+
+#### technology_search
+
+Find domains using a specific technology, via the BuiltWith [Lists API](https://api.builtwith.com/lists-api). This calls BuiltWith's real Lists endpoint and supports pagination for large result sets.
+
+Note: the Lists API is billed through the same BuiltWith API key as the Domain API, but requires a plan that includes list credits (Pro tier or above). Calling it with a key that doesn't have that access returns a clear authorization/upgrade error from BuiltWith itself, surfaced as the tool's error message.
+
+Parameters:
+
+- `technology` (required): Technology name to search for (e.g., "Shopify", "Google Analytics")
+- `otherTechnologies` (optional): Additional technology names that matching sites must also use, max 16 (array of strings)
+- `country` (optional): ISO 3166-1 alpha-2 country code(s) to filter by, comma-separated for multiple, e.g. "US" or "AU,NZ" (string)
+- `since` (optional): Only include live sites detected using the technology since this date or phrase, e.g. "2016-01-20" or "30 Days Ago" (string)
+- `includeMeta` (optional): Include metadata (company name, location, contacts, social, etc.) for each matching domain (boolean)
+- `offset` (optional): Pagination cursor - pass the `nextOffset` value from a previous response to fetch the next page (string)
+- `limit` (optional): Maximum number of results to return from the fetched page; does not request additional pages (number)
 
 ## Development
 

@@ -22,7 +22,7 @@ export class DomainLookupHandler {
         throw new Error('Domain parameter is required');
       }
 
-      return await this.apiClient.getDomainInfo(params.domain, params.detailed || false);
+      return await this.apiClient.getDomainInfo(params);
     } catch (error) {
       // Re-throw with a more user-friendly message
       if (error instanceof Error) {
