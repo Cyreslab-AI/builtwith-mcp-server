@@ -15,7 +15,7 @@ A Model Context Protocol (MCP) server that provides tools for querying the Built
 
 ## Prerequisites
 
-- Node.js 18 or higher
+- Node.js 20 or higher
 - A BuiltWith API key (get one at [BuiltWith API](https://builtwith.com/api))
 
 ## Installation
@@ -33,38 +33,10 @@ A Model Context Protocol (MCP) server that provides tools for querying the Built
    npm install
    ```
 
-   > **Note:** The MCP SDK is installed directly from GitHub. If you encounter any issues, you may need to update the dependency in package.json to point to the correct repository or version.
-
 3. Build the project:
    ```bash
    npm run build
    ```
-
-### Troubleshooting
-
-If you encounter issues with the MCP SDK dependency:
-
-1. Check if the MCP SDK is available in the npm registry:
-
-   ```bash
-   npm view @modelcontextprotocol/sdk
-   ```
-
-2. If not available, the package.json is configured to use the GitHub repository. If this fails, you may need to:
-
-   - Clone the MCP SDK repository locally
-   - Install it as a local dependency:
-
-     ```bash
-     # In another directory
-     git clone https://github.com/modelcontextprotocol/sdk.git
-     cd sdk
-     npm install
-     npm run build
-
-     # Then in your builtwith-mcp-server directory
-     npm install --save ../path/to/sdk
-     ```
 
 ## Configuration
 

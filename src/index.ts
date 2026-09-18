@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
+import { Server } from "@modelcontextprotocol/server";
 import { BuiltWithApiClient } from './api-client.js';
 import { registerTools } from './handlers/tools.js';
 import { BuiltWithConfig } from './types.js';

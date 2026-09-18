@@ -1,10 +1,4 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import {
-  CallToolRequestSchema,
-  ErrorCode,
-  ListToolsRequestSchema,
-  McpError
-} from '@modelcontextprotocol/sdk/types.js';
+import { Server, ProtocolError, ProtocolErrorCode } from "@modelcontextprotocol/server";
 import { BuiltWithApiClient } from '../api-client.js';
 import { DomainLookupHandler } from './domain-lookup.js';
 import { DomainLookupInput, TechnologySearchInput } from '../types.js';
@@ -16,7 +10,7 @@ export function registerTools(server: Server, apiClient: BuiltWithApiClient): vo
   const domainLookupHandler = new DomainLookupHandler(apiClient);
 
   // Register available tools
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({
+  server.setRequestHandler('tools/list', async (): Promise<any> => ({
     tools: [
       {
         name: 'domain_lookup',
@@ -58,35 +52,35 @@ export function registerTools(server: Server, apiClient: BuiltWithApiClient): vo
   }));
 
   // Handle tool calls
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  server.setRequestHandler('tools/call', async (request): Promise<any> => {
     try {
       switch (request.params.name) {
         case 'domain_lookup':
           return await handleDomainLookup(
-            request.params.arguments as DomainLookupInput,
+            request.params.arguments as unknown as DomainLookupInput,
             domainLookupHandler
           );
 
         case 'technology_search':
           return await handleTechnologySearch(
-            request.params.arguments as TechnologySearchInput,
+            request.params.arguments as unknown as TechnologySearchInput,
             apiClient
           );
 
         default:
-          throw new McpError(
-            ErrorCode.MethodNotFound,
+          throw new ProtocolError(
+            ProtocolErrorCode.MethodNotFound,
             `Unknown tool: ${request.params.name}`
           );
       }
     } catch (error) {
-      if (error instanceof McpError) {
+      if (error instanceof ProtocolError) {
         throw error;
       }
 
       // Convert regular errors to MCP errors
       const message = error instanceof Error ? error.message : 'Unknown error';
-      throw new McpError(ErrorCode.InternalError, message);
+      throw new ProtocolError(ProtocolErrorCode.InternalError, message);
     }
   });
 }
