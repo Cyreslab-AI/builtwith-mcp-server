@@ -4,6 +4,74 @@ import { DomainLookupHandler } from './domain-lookup.js';
 import { TechnologySearchHandler } from './technology-search.js';
 import { DomainLookupInput, TechnologySearchInput } from '../types.js';
 
+// ---------------------------------------------------------------------------
+// outputSchema fragments mirroring FormattedDomainResult and
+// FormattedTechnologySearchResult from ../types.ts. Both handlers always
+// return a plain object at the root (technology_search's `domains` array is
+// nested under a `domains` key, never the structuredContent root itself),
+// so wrapping is inherent to the existing shape rather than something added
+// here.
+// ---------------------------------------------------------------------------
+
+const FORMATTED_TECHNOLOGY_SCHEMA = {
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    category: { type: 'string' },
+    description: { type: 'string' },
+    firstDetected: { type: 'string' },
+    lastDetected: { type: 'string' },
+    link: { type: 'string' }
+  },
+  required: ['name', 'category']
+};
+
+const DOMAIN_LOOKUP_OUTPUT_SCHEMA = {
+  type: 'object',
+  properties: {
+    domain: { type: 'string' },
+    technologies: {
+      type: 'object',
+      description: 'Technologies detected for the domain, grouped by category name',
+      additionalProperties: {
+        type: 'array',
+        items: FORMATTED_TECHNOLOGY_SCHEMA
+      }
+    },
+    lastUpdated: { type: 'string' }
+  },
+  required: ['domain', 'technologies', 'lastUpdated']
+};
+
+const TECHNOLOGY_SEARCH_OUTPUT_SCHEMA = {
+  type: 'object',
+  properties: {
+    technology: { type: 'string' },
+    domains: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          domain: { type: 'string' },
+          locations: { type: 'array', items: { type: 'string' } },
+          firstDetected: { type: 'string' },
+          lastDetected: { type: 'string' },
+          monthlySpend: { type: 'number' },
+          skuCount: { type: 'number' },
+          estimatedRevenue: { type: 'number' },
+          socialFollowers: { type: 'number' },
+          employeeCount: { type: 'number' },
+          meta: { type: 'object' }
+        },
+        required: ['domain']
+      }
+    },
+    nextOffset: { type: 'string', description: 'Pagination cursor for the next page of results, if any' },
+    hasMore: { type: 'boolean' }
+  },
+  required: ['technology', 'domains', 'hasMore']
+};
+
 /**
  * Register and handle MCP tools for the BuiltWith server
  */
@@ -43,6 +111,7 @@ export function registerTools(server: Server, apiClient: BuiltWithApiClient): vo
           },
           required: ['domain']
         },
+        outputSchema: DOMAIN_LOOKUP_OUTPUT_SCHEMA,
         annotations: {
           readOnlyHint: true,
           openWorldHint: true
@@ -86,6 +155,7 @@ export function registerTools(server: Server, apiClient: BuiltWithApiClient): vo
           },
           required: ['technology']
         },
+        outputSchema: TECHNOLOGY_SEARCH_OUTPUT_SCHEMA,
         annotations: {
           readOnlyHint: true,
           openWorldHint: true
@@ -150,7 +220,10 @@ async function handleDomainLookup(
           text: handler.formatResultAsJson(result),
           mimeType: 'application/json'
         }
-      ]
+      ],
+      // `result` (FormattedDomainResult) is always a plain object at the
+      // root ({ domain, technologies, lastUpdated }), never a bare array.
+      structuredContent: result as unknown as Record<string, unknown>
     };
   } catch (error) {
     return {
@@ -187,7 +260,11 @@ async function handleTechnologySearch(
           text: handler.formatResultAsJson(result),
           mimeType: 'application/json'
         }
-      ]
+      ],
+      // `result` (FormattedTechnologySearchResult) is always a plain object
+      // at the root ({ technology, domains, nextOffset?, hasMore }); its
+      // `domains` array lives under a named key, never at the root itself.
+      structuredContent: result as unknown as Record<string, unknown>
     };
   } catch (error) {
     return {
